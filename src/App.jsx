@@ -29,12 +29,53 @@ function App() {
   }
   //, filteredVehicles, setFilteredVehicles
 
+  let uniqueVtypes = [...new Set(vehicles.map((v) => v.type))];
+
+  const filterByTypeList = (
+    <>
+      <div>
+        <label>Filter vehicles by type</label>
+        <select
+          name="filterByType"
+          onChange={(e) => {
+            setFilteredVehicles(filterVehByType(e.currentTarget.value));
+          }}
+        >
+          {uniqueVtypes.map((vtype, i) => {
+            return (
+              <>
+                <option key={i} value={vtype}>
+                  {vtype}
+                </option>
+              </>
+            );
+          })}
+        </select>
+      </div>
+    </>
+  );
+
+  function filterVehByType(vType) {
+    let filteredVehicles = vehicles;
+
+    if (vType !== "any") {
+      filteredVehicles = vehicles.filter((vehicle) => {
+        return vehicle.type == vType;
+      });
+    }
+
+    data.filteredVvehicles = filteredVehicles;
+
+    setData({ ...data });
+  }
+
   return (
-    <MyStore.Provider
-      value={[data, setData, filteredVehicles, setFilteredVehicles]}
-    >
+    <MyStore.Provider value={[data, setData]}>
       <h1>Quartix2</h1>
-      <Vehicles vehicles={vehicles} />
+      {filterByTypeList}
+      <Vehicles
+        vehicles={data.filteredVvehicles ? data.filteredVvehicles : vehicles}
+      />
       ------
       {/* <Inspections inspection={} /> */}
     </MyStore.Provider>
